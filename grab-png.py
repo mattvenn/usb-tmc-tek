@@ -1,15 +1,20 @@
-import usbtmc
-# ms2004b 0699, idProduct=039c
-scope = usbtmc.Instrument(int("0699", 16),int("039c", 16))
-print(scope.ask("*IDN?"))
+from datetime import datetime
+import visa, time
+resources = visa.ResourceManager('@py')
 
-# read horizontal timescale
-scope.write("HORIZONTAL:MAIN:SCALE?")                                                                                                                                                                     
-timescale = float(scope.read(20))
+scope = resources.open_resource('USB0::1689::924::C010251::0::INSTR', read_termination="\n", write_termination="\n")
 
-# save to a file, once triggered
-scope.write("SAVE:IMAG:FILEF PNG")
-scope.write("HARDCOPY START") 
-screenData = scope.read_raw()
-with open("data.png", 'w') as fh:
-    fh.write(screenData)  
+scope.write("SAVe:IMAGe:FILEFormat PNG")
+scope.write("SAVe:IMAGe:INKSaver OFF")
+scope.write("HARDCopy STARt")
+imgData = scope.read_raw()
+
+# Generate a filename based on the current Date & Time
+dt = datetime.now()
+fileName = dt.strftime("%Y%m%d_%H%M%S.png")
+
+imgFile = open(fileName, "wb")
+imgFile.write(imgData)
+imgFile.close()
+
+scope.close()
