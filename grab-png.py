@@ -3,7 +3,7 @@ import visa, time
 resources = visa.ResourceManager('@py')
 
 scope = resources.open_resource('USB0::1689::924::C010251::0::INSTR', read_termination="\n", write_termination="\n")
-scope.timeout = 10000
+scope.timeout = 2000
 print(scope.query('*IDN?'))
 
 print(scope.write("SAVe:IMAGe:FILEFormat PNG"))
