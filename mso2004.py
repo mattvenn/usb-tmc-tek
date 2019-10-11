@@ -1,7 +1,7 @@
 from datetime import datetime
 import visa, time
 
-class scope():
+class Scope():
 
     def __init__(self):
 
@@ -24,22 +24,26 @@ class scope():
         imgData = self.scope.read_raw()
 
         with open(fileName, "wb") as fh:
+            print("written to %s" % fileName)
             fh.write(imgData)
 
     def single(self):
-        self.scope.write("TRIGger:MODe NORMal") # set trigger normal
-        #print(scope.write("ACQuire:STOPAfter RUNSTop")) # continuous
-        self.scope.write("ACQuire:STOPAfter SEQ") # single shot
-        self.scope.query("ACQ?")
-        self.scope.write("ACQuire:STATE RUN") # acquire single trigger
+        self.scope.write("TRIGger:MODe NORMal")         # set trigger normal
+        self.scope.write("ACQuire:STOPAfter SEQ")       # single shot
+        self.scope.write("ACQuire:STATE RUN")           # run
         print("waiting for trigger...")
+        while True:
+            state = self.scope.query("TRIGger:STATE?")  # get trigger state
+            print(state)
+            if(state == "SAV"):
+                break
+            time.sleep(0.1)
 
     def __del__(self):
         self.scope.close()
 
 
 if __name__ == '__main__':
-    scope = mso2004()
+    scope = Scope()
     scope.single()
-    time.sleep(2)
     scope.grab_png()
