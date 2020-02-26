@@ -33,3 +33,5 @@ then should be able to list devices with
     import visa, time
     resources = visa.ResourceManager('@py')
     print(resources.list_resources())
+
+if this doesn't work, try running with sudo and fix permissions
