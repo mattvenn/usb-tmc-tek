@@ -42,7 +42,7 @@ class Scope():
     def measure(self):
         self.scope.write('MEASUREMENT:IMMED:TYPE PK2PK')
         self.scope.write('MEASUREMENT:IMMED:SOURCE CH 1')
-        print(self.scope.query('MEASUREMENT:IMMED:VALUE?'))
+        return float(self.scope.query('MEASUREMENT:IMMED:VALUE?'))
 
     def __del__(self):
         self.scope.close()
@@ -50,6 +50,6 @@ class Scope():
 
 if __name__ == '__main__':
     scope = Scope()
-    scope.measure()
+    print(scope.measure())
     scope.single()
     scope.grab_png()
