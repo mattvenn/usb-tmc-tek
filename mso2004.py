@@ -41,14 +41,15 @@ class Scope():
             time.sleep(0.1)
 
     def measure(self):
-        #self.scope.write('*rst')
-        self.scope.query('*opc?')
-        self.scope.write('acquire:state off')
-        self.scope.write('acquire:stopafter sequence')
+        # https://forum.tek.com/viewtopic.php?t=136954
+        # some of this doesn't appear to be necessary if the scope is running
+        # self.scope.query('*opc?')
+        # self.scope.write('acquire:state off')
+        # self.scope.write('acquire:stopafter sequence')
         self.scope.write("MEASUrement:IMMed:SOURCE CH1")
         self.scope.write("MEASUrement:IMMed:TYPE FREQuency")
-        self.scope.write('acquire:state on')
-        self.scope.query('*opc?')
+        # self.scope.write('acquire:state on')
+        # self.scope.query('*opc?')
         return self.scope.query("MEASUrement:IMMed:VALue?")
 
     def __del__(self):
