@@ -1,5 +1,6 @@
 from datetime import datetime
-import visa, time
+import pyvisa as visa
+import time
 
 class Scope():
 
@@ -8,7 +9,7 @@ class Scope():
         resources = visa.ResourceManager('@py')
 
         self.scope = resources.open_resource('USB0::1689::924::C010251::0::INSTR', read_termination="\n", write_termination="\n")
-        self.scope.timeout = 2000
+        self.scope.timeout = 8000
         print(self.scope.query('*IDN?'))
         self.scope.write("SAVe:IMAGe:FILEFormat PNG")
         self.scope.write("SAVe:IMAGe:INKSaver OFF")
@@ -40,9 +41,15 @@ class Scope():
             time.sleep(0.1)
 
     def measure(self):
-        self.scope.write('MEASUREMENT:IMMED:TYPE PK2PK')
-        self.scope.write('MEASUREMENT:IMMED:SOURCE CH 1')
-        return float(self.scope.query('MEASUREMENT:IMMED:VALUE?'))
+        #self.scope.write('*rst')
+        self.scope.query('*opc?')
+        self.scope.write('acquire:state off')
+        self.scope.write('acquire:stopafter sequence')
+        self.scope.write("MEASUrement:IMMed:SOURCE CH1")
+        self.scope.write("MEASUrement:IMMed:TYPE FREQuency")
+        self.scope.write('acquire:state on')
+        self.scope.query('*opc?')
+        return self.scope.query("MEASUrement:IMMed:VALue?")
 
     def __del__(self):
         self.scope.close()
@@ -50,6 +57,7 @@ class Scope():
 
 if __name__ == '__main__':
     scope = Scope()
+   # scope.grab_png()
+#    scope.single()
     print(scope.measure())
-    scope.single()
-    scope.grab_png()
+   # scope.grab_png()
